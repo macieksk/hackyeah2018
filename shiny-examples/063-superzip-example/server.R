@@ -24,6 +24,41 @@ function(input, output, session) {
       ) %>%
       setView(lng = 24, lat = 51, zoom = 6)
   })
+  
+  do_onclick <-function(click) {
+    
+    proxy <- leafletProxy("map")
+    # remove all markers and popups
+    proxy %>% clearMarkers()
+    proxy %>% clearShapes()
+    
+    # add new marker around the center
+    proxy %>% addMarkers(lng=click$lng,lat = click$lat,popup='Your Starting Point')
+    # add new circle
+    proxy %>% addCircles(lng=click$lng, lat=click$lat,radius=(1609.344*10),color='red')
+    
+  }
+  
+  observeEvent(input$map_click, {
+    
+    click<-input$map_click
+    output$clickInfo <- renderPrint(click)
+    text <-paste("lat ",click$lat," lon ",click$lng)
+    print(text)
+    do_onclick(click)
+    
+  })
+  
+  #  #### what to do on shape click
+  observeEvent(input$map_shape_click, {
+    
+    click<-input$map_shape_click
+    output$clickInfo <- renderPrint(click)
+    text <-paste("lat ",click$lat," lon ",click$lng)
+    print(text)
+    do_onclick(click)
+    
+  }) 
 
   # A reactive expression that returns the set of zips that are
   # in bounds right now
