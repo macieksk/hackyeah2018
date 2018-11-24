@@ -1,0 +1,34 @@
+NSP_2011_-_LUDNOŚĆ_wg_wiek_i_płci_-_objaśnienia.txt
+
+Dane w tablicy można posortować według kodu jednostki terytorialnej oraz wartości w poszczególnych kolumnach (kliknięcie w nagłówek kolumny lub nazwę jednostki miary).
+Znak  obok nazwy jednostki terytorialnej oznacza, że wprowadzono zmianę dotyczącą tej jednostki.
+Cyfra w nawiasie umieszczona po nazwie jednostki terytorialnej określa rodzaj jednostki terytorialnej:
+Rodzaj	Nazwa rodzaju gminy
+1	Gmina miejska
+2	Gmina wiejska
+3	Gmina miejsko-wiejska
+4	Miasto w gminie miejsko-wiejskiej
+5	Obszar wiejski w gminie miejsko-wiejskiej
+8	Dzielnice m. st. Warszawa
+9	Delegatury i dzielnice innych gmin miejskich
+Struktura Kodu terytorialnego różni się w poszczególnych układach jednostek terytorialnych.
+
+W widoku wg jednostek statystycznych (NUTS) ma postać:
+
+00	00	0	00	00	000	- łącznie 12 znaków
+1.	2.	3.	4.	5.	6.
+gdzie poszczególne elementy oznaczają odpowiednio:
+1. Symbol makroregionu (01, 02, ..., 07)	- dwa znaki
+2. Symbol województwa (00, 02, ..., 32)	- dwa znaki
+3. Symbol regionu (1, 2)	- jeden znak
+4. Symbol podregionu (00, 01, ..., 73)	- dwa znaki
+5. Symbol powiatu (00, 01, ..., 59 - powiat; 60, ..., 99 - miasto na prawach powiatu)	- dwa znaki
+6. Symbol gminy/części gmin (000......, gdzie ostatni znak stanowi symbol rodzaju jednostki)	- trzy znaki
+a w widoku wg jednostek administracyjnych (TERYT):
+
+00	00	000	- łącznie 7 znaków
+1.	2.	3.
+gdzie poszczególne elementy oznaczają odpowiednio:
+1. Symbol województwa (00, 02, ..., 32)	- dwa znaki
+2. Symbol powiatu (00, 01, ..., 59 - powiat; 60, ..., 99 - miasto na prawach powiatu)	- dwa znaki
+3. Symbol gminy/części gminy (000......, gdzie ostatni znak oznacza rodzaj jednostki)	- trzy znaki
