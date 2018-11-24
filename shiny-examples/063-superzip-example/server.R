@@ -133,10 +133,9 @@ function(input, output, session) {
   }
   
   observe({
-    leafletProxy("map") %>% clearPopups()
+    proxy <- leafletProxy("map")
+    proxy %>% clearPopups()
     event <- input$map_click
-    output$clickInfo <- renderPrint(event)
-    proxy %>% addMarkers(lng=event$lng,lat = event$lat,popup='Your Starting Point')
     isolate({
       showLatLng(event$lat,event$lng)
     })
