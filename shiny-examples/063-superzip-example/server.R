@@ -109,17 +109,27 @@ function(input, output, session) {
 #        layerId="colorLegend")
 #  })
 
-  # Show a popup at the given location
+ # Show a popup at the given location
   showZipcodePopup <- function(zipcode, lat, lng) {
     selectedZip <- allzips[allzips$zipcode == zipcode,]
-    content <- as.character(tagList(
-      tags$h4("Score:", as.integer(zipcode)),
+      
+    cnames<-as.vector(matrix(rep(colnames(cleantable)[4:NCOL(cleantable)],2),2,byrow=TRUE))
+    idx<-rep(1:2,length(4:NCOL(cleantable)))==2
+    cnames[idx]<-NA
+    content <- as.character(
+      do.call(tagList,
+      c(list(
+      tags$h4("Powiat ", cleantable[zipcode,1]),#as.integer(zipcode)),
       tags$strong(HTML(sprintf("%s, %s %s",
         selectedZip$city.x, selectedZip$state.x, selectedZip$zipcode
-      ))), tags$br(),
-      sprintf("Median household income: %s", dollar(selectedZip$income * 1000)), tags$br(),
-      sprintf("Percent of adults with BA: %s%%", as.integer(selectedZip$college)), tags$br(),
-      sprintf("Adult population: %s", selectedZip$adultpop)
+      ))), 
+      tags$br()),
+      lapply(cnames,function(cn){
+           if (is.na(cn)) return(tags$br())
+           sprintf("%s: %s", cn, cleantable[zipcode,cn])
+          }
+        )
+      )
     ))
     leafletProxy("map") %>% addPopups(lng, lat, content, layerId = zipcode)
   }
