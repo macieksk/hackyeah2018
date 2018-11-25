@@ -8,20 +8,23 @@ allzips$college <- allzips$college * 100
 allzips$zipcode <- formatC(allzips$zipcode, width=5, format="d", flag="0")
 row.names(allzips) <- allzips$zipcode
 
-cleantable <- allzips %>%
-  select(
-    City = city.x,
-    State = state.x,
-    Zipcode = zipcode,
-    Rank = rank,
-    Score = centile,
-    Superzip = superzip,
-    Population = adultpop,
-    College = college,
-    Income = income,
-    Lat = latitude,
-    Long = longitude
-  )
+#cleantable <- allzips %>%
+#  select(
+#    City = city.x,
+#    State = state.x,
+#    Zipcode = zipcode,
+#    Rank = rank,
+#    Score = centile,
+#    Superzip = superzip,
+#    Population = adultpop,
+#    College = college,
+#    Income = income,
+#    Lat = latitude,
+#    Long = longitude
+#  )
+
+cleantable <- powiatyDataLatLng
+
 
 #zgonyCSV <- read.csv("bdl_data/zgony.csv",header=TRUE, sep=",")
 #names(zgonyCSV)<-c("powiat","nowotwory","cukrzyca","zawal.serca","niewyd.ukl.oddech.")

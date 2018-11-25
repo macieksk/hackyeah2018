@@ -113,7 +113,7 @@ function(input, output, session) {
   showZipcodePopup <- function(zipcode, lat, lng) {
     selectedZip <- allzips[allzips$zipcode == zipcode,]
     content <- as.character(tagList(
-      tags$h4("Score:", as.integer(selectedZip$centile)),
+      tags$h4("Score:", as.integer(zipcode)),
       tags$strong(HTML(sprintf("%s, %s %s",
         selectedZip$city.x, selectedZip$state.x, selectedZip$zipcode
       ))), tags$br(),
@@ -344,12 +344,13 @@ function(input, output, session) {
      obj<-input$testButton; if (is.null(obj)) return()
      if(input$testButton==0) isolate({
          prepareMap()
+         color_all(powiatyData[,as.numeric(input$dane)])
      }) else {
          daneGlob<<-input$dane
-         print(paste("input$dane",input$dane))
+         #print(paste("input$dane",input$dane))
          color_all(powiatyData[,as.numeric(input$dane)])
      }
-     printTest(paste("testButton not null",input$testButton)) 
+     #printTest(paste("LoadButton counter:",input$testButton)) 
      #print(input$testButton)
   })
     
@@ -371,14 +372,14 @@ function(input, output, session) {
 
   output$ziptable <- DT::renderDataTable({
     df <- cleantable %>%
-      filter(
-        Score >= input$minScore,
-        Score <= input$maxScore,
-        is.null(input$states) | State %in% input$states,
-        is.null(input$cities) | City %in% input$cities,
-        is.null(input$zipcodes) | Zipcode %in% input$zipcodes
-      ) %>%
-      mutate(Action = paste('<a class="go-map" href="" data-lat="', Lat, '" data-long="', Long, '" data-zip="', Zipcode, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
+    #  filter(
+    #    Score >= input$minScore,
+    #    Score <= input$maxScore,
+    #    is.null(input$states) | State %in% input$states,
+    #    is.null(input$cities) | City %in% input$cities,
+    #    is.null(input$zipcodes) | Zipcode %in% input$zipcodes
+    #  ) %>%
+      mutate(Action = paste('<a class="go-map" href="" data-lat="', Lat, '" data-long="', Long, '" data-zip="', 1:NROW(cleantable), '"><i class="fa fa-crosshairs"></i></a>', sep=""))
     action <- DT::dataTableAjax(session, df)
 
     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
