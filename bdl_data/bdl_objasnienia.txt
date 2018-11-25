@@ -1,3 +1,7 @@
+zgony.csv, from
+https://dane-i-analizy.pl (harvested)
+
+
 NSP_2011_-_LUDNOŚĆ_wg_wiek_i_płci_-_objaśnienia.txt
 
 Dane w tablicy można posortować według kodu jednostki terytorialnej oraz wartości w poszczególnych kolumnach (kliknięcie w nagłówek kolumny lub nazwę jednostki miary).
