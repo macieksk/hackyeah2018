@@ -3,6 +3,9 @@
 ===Small shape files===
 http://www.gauss.pl/analityk/drupal/node/43
 
+$ parallel 'wget "http://www.gauss.pl/analityk/drupal/sites/default/files/{}"' :::  POWIATY.gml POWIATY.dbf POWIATY.shp POWIATY.shx WOJEWODZTWA.gml WOJ.dbf WOJ.shp WOJ.shx
+
+
 Załącznik   Wielkość
 POWIATY.gml 3.18 MB
 POWIATY.dbf 9.71 KB
