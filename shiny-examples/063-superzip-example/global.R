@@ -22,3 +22,8 @@ cleantable <- allzips %>%
     Lat = latitude,
     Long = longitude
   )
+
+#zgonyCSV <- read.csv("bdl_data/zgony.csv",header=TRUE, sep=",")
+#names(zgonyCSV)<-c("powiat","nowotwory","cukrzyca","zawal.serca","niewyd.ukl.oddech.")
+
+#populacja<-read.csv("bdl_data/NARO_3304_CTAB_20181124191233.csv",header=TRUE,sep=";")

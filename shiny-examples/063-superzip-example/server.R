@@ -249,7 +249,7 @@ function(input, output, session) {
      #proxy %>% addMarkers(lng=click$lng,lat = click$lat,popup='Your Starting Point')
       proxy %>% addMarkers(lng=regLngLat[1],lat = regLngLat[2],popup='Your Starting Point')
     
-      proxy %>% removeShape(layerId = click$id)
+      proxy %>% removeMarker(layerId = click$id)
       
       #leafletProxy("map")<-proxy
       
