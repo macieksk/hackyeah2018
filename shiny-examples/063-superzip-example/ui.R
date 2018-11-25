@@ -54,7 +54,7 @@ navbarPage("LuGi - HackYeah2018", id="nav",
   tabPanel("Data explorer",
     fluidRow(
       column(3,
-        selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
+        selectInput("states", "Regions", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
       ),
       column(3,
         conditionalPanel("input.states",
