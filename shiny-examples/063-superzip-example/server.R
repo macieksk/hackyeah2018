@@ -1,3 +1,4 @@
+# %load shiny-examples/063-superzip-example/server.R
 library(leaflet)
 library(RColorBrewer)
 library(scales)
@@ -160,7 +161,7 @@ function(input, output, session) {
   
   showLatLng <- function(lat,lng) {
     output$coord_lat <- renderText({
-      paste("Latitude:",lat)
+      paste("Latitude__:",lat)
     })
     output$coord_lng <- renderText({
       paste("Longitude:",lng)

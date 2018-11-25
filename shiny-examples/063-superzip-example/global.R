@@ -1,3 +1,4 @@
+# %load shiny-examples/063-superzip-example/global.R
 library(dplyr)
 
 allzips <- readRDS("data/superzip.rds")

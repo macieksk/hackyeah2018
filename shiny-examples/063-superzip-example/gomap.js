@@ -1,3 +1,5 @@
+// %load shiny-examples/063-superzip-example/gomap.js
+
 // When locator icon in datatable is clicked, go to that spot on the map
 $(document).on("click", ".go-map", function(e) {
   e.preventDefault();

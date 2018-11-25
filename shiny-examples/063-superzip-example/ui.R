@@ -1,3 +1,4 @@
+# %load shiny-examples/063-superzip-example/ui.R
 library(leaflet)
 
 # Choices for drop-downs
