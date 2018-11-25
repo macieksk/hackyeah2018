@@ -11,7 +11,7 @@ vars <- c(
 )
 
 
-navbarPage("LuGi - Aviva", id="nav",
+navbarPage("LuGi - HackYeah2018", id="nav",
 
   tabPanel("Interactive map",
     div(class="outer",
@@ -27,7 +27,7 @@ navbarPage("LuGi - Aviva", id="nav",
 
       # Shiny versions prior to 0.11 should use class = "modal" instead.
       absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-        draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+        draggable = FALSE, top = 60, left = "auto", right = 20, bottom = "auto",
         width = 330, height = "auto",
 
         h2("Health myth busters"),
@@ -41,6 +41,8 @@ navbarPage("LuGi - Aviva", id="nav",
         
         textOutput("coord_lat"),
         textOutput("coord_lng"),
+        actionButton("testButton","Test"),
+        textOutput("testText"),
 
         plotOutput("histCentile", height = 200),
         plotOutput("scatterCollegeIncome", height = 250)

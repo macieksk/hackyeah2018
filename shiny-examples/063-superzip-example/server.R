@@ -15,7 +15,12 @@ zipdata <- zipdata[order(zipdata$centile),]
 function(input, output, session) {
 
   ## Interactive Map ###########################################
-
+  #v<-reactiveValues(data=NULL)
+  
+  #map.on("load",function(e){
+  #    print("map.on.load")
+  #})
+    
   # Create the map
   output$map <- renderLeaflet({
     leaflet() %>%
@@ -23,43 +28,15 @@ function(input, output, session) {
         urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       ) %>%
-      setView(lng = 24, lat = 51, zoom = 6)
+      setView(lng = 22, lat = 52, zoom = 7) #%>%
+      #addPolygons(data=powiatyOGR) 
+      #, color = "#444444", weight = 5, smoothFactor = 0.5,
+      #opacity = 1.0, fillOpacity = 0.5,
+      #highlightOptions = highlightOptions(color = "white", weight = 2,
+      #=ringToFront = TRUE))
   })
-  
-  do_onclick <-function(click) {
     
-    proxy <- leafletProxy("map")
-    # remove all markers and popups
-    proxy %>% clearMarkers()
-    proxy %>% clearShapes()
-    
-    # add new marker around the center
-    proxy %>% addMarkers(lng=click$lng,lat = click$lat,popup='Your Starting Point')
-    # add new circle
-    proxy %>% addCircles(lng=click$lng, lat=click$lat,radius=(1609.344*10),color='red')
-    
-  }
-  
-  observeEvent(input$map_click, {
-    
-    click<-input$map_click
-    output$clickInfo <- renderPrint(click)
-    text <-paste("lat ",click$lat," lon ",click$lng)
-    print(text)
-    do_onclick(click)
-    
-  })
-  
-  #  #### what to do on shape click
-  observeEvent(input$map_shape_click, {
-    
-    click<-input$map_shape_click
-    output$clickInfo <- renderPrint(click)
-    text <-paste("lat ",click$lat," lon ",click$lng)
-    print(text)
-    do_onclick(click)
-    
-  }) 
+
 
   # A reactive expression that returns the set of zips that are
   # in bounds right now
@@ -151,9 +128,7 @@ function(input, output, session) {
   observe({
     leafletProxy("map") %>% clearPopups()
     event <- input$map_shape_click
-    if (is.null(event))
-      return()
-
+    if (is.null(event)) return()
     isolate({
       showZipcodePopup(event$id, event$lat, event$lng)
     })
@@ -161,7 +136,7 @@ function(input, output, session) {
   
   showLatLng <- function(lat,lng) {
     output$coord_lat <- renderText({
-      paste("Latitude__:",lat)
+      paste("Latitude:",lat)
     })
     output$coord_lng <- renderText({
       paste("Longitude:",lng)
@@ -220,6 +195,124 @@ function(input, output, session) {
       map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
     })
   })
+    
+    
+   ################################3
+  
+  printTest<-function(s){
+    output$testText <- renderText({s})    
+  }
+    
+  do_shape_onclick <-function(click) {
+    
+    # add new circle
+    #proxy %>% addCircles(lng=click$lng, lat=click$lat,radius=(1609.344*10),color='red')
+      
+    #proxy %>% addPolygons(data=powiatyOGR, color = "#444444", weight = 1, smoothFactor = 0.5)
+      #opacity = 1.0, fillOpacity = 0.5,
+      #highlightOptions = highlightOptions(color = "white", weight = 2,
+      #=ringToFront = TRUE))
+      
+      #pulls lat and lon from shiny click event
+      lat <- click$lat
+      lon <- click$lng
+
+      #puts lat and lon for click point into its own data frame
+      coords <- as.data.frame(cbind(lon, lat))
+
+      #converts click point coordinate data frame into SP object, sets CRS
+      point <- SpatialPoints(coords)
+      proj4string(point) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+      printTest(paste("shape_onclick point"))  
+      #retrieves country in which the click point resides, set CRS for country
+      selectedReg <- powiatyOGR[point,]
+      proj4string(selectedReg) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs") 
+      
+      selectedRegion<<-selectedReg
+      printTest(paste("Selected:",str(selectedReg@data)))
+      
+      selPols<-selectedReg@polygons
+      if (length(selPols)>=1) {         
+        regLngLat<-selPols[[1]]@labpt
+        printTest(paste("regLngLat:",regLngLat)) 
+      
+     proxy <- leafletProxy("map")
+     # remove all markers and popups
+     proxy %>% clearMarkers()
+     #proxy %>% clearShapes()
+    
+     # add new marker around the center
+     #proxy %>% addMarkers(lng=click$lng,lat = click$lat,popup='Your Starting Point')
+     proxy %>% addMarkers(lng=regLngLat[1],lat = regLngLat[2],popup='Your Starting Point')
+      
+    }
+  }
+    
+    
+  #observeEvent(input$map_click, {
+  #observe({
+    #proxy <- leafletProxy("map")
+    #proxy %>% clearPopups()
+    #event <- input$map_click
+ 
+ #  click<-input$map_click; if (is.null(click)) return()
+  #  isolate({
+  #  output$clickInfo <- renderPrint(click)
+ #   text <-paste("lat ",click$lat," lon ",click$lng)
+ #   print(text)
+ #   #do_onclick(click)
+ #   })
+ # })
+  
+  #  #### what to do on shape click
+  #observeEvent(input$map_shape_click, {
+  observe({    
+    click<-input$map_shape_click; if (is.null(click))  return()
+    #if(!v$click) return()
+    isolate({ 
+    output$clickInfo <- renderPrint(click)
+    text <-paste("map_shape_click lat ",click$lat," lon ",click$lng)
+    printTest(text)
+    do_shape_onclick(click)
+    })
+    
+  }) 
+  
+  #testRes<-eventReactive(input$testButton, {
+  #   print("testButton pressed") #input$testButton)    
+    
+  #})
+    
+  prepareMap<-function() {
+     leafletProxy("map") %>% 
+     addPolygons(data=powiatyOGR, color = "#444444", weight = 1, smoothFactor = 0.5)
+            
+  }        
+    
+  observe({     
+     obj<-input$testButton; if (is.null(obj)) return()
+     if(input$testButton==0) isolate({
+         prepareMap()
+     })
+     printTest(paste("testButton not null",input$testButton)) 
+     #print(input$testButton)
+  })
+    
+     #if (!input$powiaty.loaded) isolate({
+     #      leafletProxy("map") %>% 
+     #       addPolygons(data=powiatyOGR, color = "#444444", weight = 1, smoothFactor = 0.5)  
+     #})
+    
+     #if (v$testButton) print("testButton clicked!")
+     #isolate({
+        #leafletProxy("map") %>% 
+        #addPolygons(data=powiatyOGR, color = "#444444", weight = 1, smoothFactor = 0.5)
+        #opacity = 1.0, fillOpacity = 0.5,
+        #highlightOptions = highlightOptions(color = "white", weight = 2,
+      #=ringToFront = TRUE))
+     #})   
+  #})
+        
 
   output$ziptable <- DT::renderDataTable({
     df <- cleantable %>%
