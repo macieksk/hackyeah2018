@@ -213,6 +213,8 @@ function(input, output, session) {
       #highlightOptions = highlightOptions(color = "white", weight = 2,
       #=ringToFront = TRUE))
       
+      clickGlob<<-click
+      
       #pulls lat and lon from shiny click event
       lat <- click$lat
       lon <- click$lng
@@ -221,31 +223,52 @@ function(input, output, session) {
       coords <- as.data.frame(cbind(lon, lat))
 
       #converts click point coordinate data frame into SP object, sets CRS
-      point <- SpatialPoints(coords)
-      proj4string(point) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-      printTest(paste("shape_onclick point"))  
+      #point <- SpatialPoints(coords)
+      #proj4string(point) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+      #printTest(paste("shape_onclick point"))  
       #retrieves country in which the click point resides, set CRS for country
-      selectedReg <- powiatyOGR[point,]
-      proj4string(selectedReg) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs") 
+      #selectedReg <- powiatyOGR[point,]
+      #proj4string(selectedReg) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs") 
       
-      selectedRegion<<-selectedReg
-      printTest(paste("Selected:",str(selectedReg@data)))
-      
-      selPols<-selectedReg@polygons
+      if (is.integer(click$id)) {
+        printTest(paste("SelectedID:",click$id)) 
+           
+        printTest(paste("Selected:",as.character(powiatyOGR$NAZWA[click$id])))
+           
+      selPols<-powiatyOGR@polygons[click$id]
       if (length(selPols)>=1) {         
         regLngLat<-selPols[[1]]@labpt
-        printTest(paste("regLngLat:",regLngLat)) 
+        #printTest(paste("regLngLat:",regLngLat)) 
       
-     proxy <- leafletProxy("map")
-     # remove all markers and popups
-     proxy %>% clearMarkers()
+       proxy <- leafletProxy("map")
+       # remove all markers and popups
+       proxy %>% clearMarkers()
      #proxy %>% clearShapes()
     
      # add new marker around the center
      #proxy %>% addMarkers(lng=click$lng,lat = click$lat,popup='Your Starting Point')
-     proxy %>% addMarkers(lng=regLngLat[1],lat = regLngLat[2],popup='Your Starting Point')
+      proxy %>% addMarkers(lng=regLngLat[1],lat = regLngLat[2],popup='Your Starting Point')
+    
+      proxy %>% removeShape(layerId = click$id)
       
-    }
+      #leafletProxy("map")<-proxy
+      
+      markUnmark<-runif(1)>0.5
+      if (markUnmark) {
+         proxy %>% addPolygons(data = selPols[[1]], 
+                              fillColor = "gray",
+                              fillOpacity = 0.5, 
+                              color = "red",
+                              weight = 3, 
+                              stroke = TRUE,
+                              layerId = click$id)
+      } else {
+          do.call(addPolygons,c(list(map=proxy,data=selPols[[1]], layerId=click$id),
+                           defaultRegionPolVals))
+      }
+           
+      } # if selPols              
+     } # if is.integer
   }
     
     
@@ -282,10 +305,13 @@ function(input, output, session) {
   #   print("testButton pressed") #input$testButton)    
     
   #})
+ 
+  defaultRegionPolVals<-list(color = "#444444", weight = 1, smoothFactor = 0.5)
     
   prepareMap<-function() {
-     leafletProxy("map") %>% 
-     addPolygons(data=powiatyOGR, color = "#444444", weight = 1, smoothFactor = 0.5)
+     proxy <- leafletProxy("map")
+     do.call(addPolygons,c(list(map=proxy,data=powiatyOGR, layerId=~seq_along(NAZWA)),
+                           defaultRegionPolVals))                 
             
   }        
     
