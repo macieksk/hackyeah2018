@@ -2,14 +2,12 @@
 library(leaflet)
 
 # Choices for drop-downs
-vars <- c(
-  "Is SuperZIP?" = "superzip",
-  "Centile score" = "centile",
-  "College education" = "college",
-  "Median income" = "income",
-  "Population" = "adultpop"
-)
 
+#vars <- c(
+#  "Zgony" = "zgonyCSV"
+#)
+vars<-2:NCOL(powiatyData)
+names(vars)<-colnames(powiatyData[,2:NCOL(powiatyData)])
 
 navbarPage("LuGi - HackYeah2018", id="nav",
 
@@ -32,16 +30,15 @@ navbarPage("LuGi - HackYeah2018", id="nav",
 
         h2("Health myth busters"),
 
-        selectInput("color", "Color", vars),
-        selectInput("size", "Size", vars, selected = "adultpop"),
-        conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
+        selectInput("dane", "Dane", vars),
+        #conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
           # Only prompt for threshold when coloring or sizing by superzip
-          numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-        ),
+         # numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
+        #),
         
         textOutput("coord_lat"),
         textOutput("coord_lng"),
-        actionButton("testButton","Test"),
+        actionButton("testButton","LoadData"),
         textOutput("testText"),
 
         plotOutput("histCentile", height = 200),
@@ -49,7 +46,7 @@ navbarPage("LuGi - HackYeah2018", id="nav",
       ),
 
       tags$div(id="cite",
-        'Data compiled for ', tags$em('Coming Apart: The State of White America, 1960–2010'), ' by Charles Murray (Crown Forum, 2012).'
+        'Data compiled for ', tags$em('HackYeah2018'), ' by M.Sykulski, B.Poszewiecka, J.Grabowski.'
       )
     )
   ),

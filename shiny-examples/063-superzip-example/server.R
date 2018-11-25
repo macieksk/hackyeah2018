@@ -80,34 +80,34 @@ function(input, output, session) {
 
   # This observer is responsible for maintaining the circles and legend,
   # according to the variables the user has chosen to map to color and size.
-  observe({
-    colorBy <- input$color
-    sizeBy <- input$size
+#  observe({
+#    colorBy <- input$color
+#    sizeBy <- ""#input$size
+#
+#    if (colorBy == "superzip") {
+#      # Color and palette are treated specially in the "superzip" case, because
+#      # the values are categorical instead of continuous.
+#      colorData <- ifelse(zipdata$centile >= (100 - input$threshold), "yes", "no")
+#      pal <- colorFactor("viridis", colorData)
+#    } else {
+#      colorData <- zipdata[[colorBy]]
+#      pal <- colorBin("viridis", colorData, 7, pretty = FALSE)
+#    }
 
-    if (colorBy == "superzip") {
-      # Color and palette are treated specially in the "superzip" case, because
-      # the values are categorical instead of continuous.
-      colorData <- ifelse(zipdata$centile >= (100 - input$threshold), "yes", "no")
-      pal <- colorFactor("viridis", colorData)
-    } else {
-      colorData <- zipdata[[colorBy]]
-      pal <- colorBin("viridis", colorData, 7, pretty = FALSE)
-    }
+#    if (sizeBy == "superzip") {
+#      # Radius is treated specially in the "superzip" case.
+#      radius <- ifelse(zipdata$centile >= (100 - input$threshold), 30000, 3000)
+#    } else {
+#      radius <- zipdata[[sizeBy]] / max(zipdata[[sizeBy]]) * 30000
+#    }
 
-    if (sizeBy == "superzip") {
-      # Radius is treated specially in the "superzip" case.
-      radius <- ifelse(zipdata$centile >= (100 - input$threshold), 30000, 3000)
-    } else {
-      radius <- zipdata[[sizeBy]] / max(zipdata[[sizeBy]]) * 30000
-    }
-
-    leafletProxy("map", data = zipdata) %>%
-      clearShapes() %>%
-      addCircles(~longitude, ~latitude, radius=radius, layerId=~zipcode,
-        stroke=FALSE, fillOpacity=0.4, fillColor=pal(colorData)) %>%
-      addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
-        layerId="colorLegend")
-  })
+#    leafletProxy("map", data = zipdata) %>%
+#      clearShapes() %>%
+#      addCircles(~longitude, ~latitude, radius=radius, layerId=~zipcode,
+#        stroke=FALSE, fillOpacity=0.4, fillColor=pal(colorData)) %>%
+#      addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
+#        layerId="colorLegend")
+#  })
 
   # Show a popup at the given location
   showZipcodePopup <- function(zipcode, lat, lng) {
@@ -203,6 +203,31 @@ function(input, output, session) {
     output$testText <- renderText({s})    
   }
     
+  color_all<-function(dataCol=powiatyData[,6]){
+     mnDC<-min(dataCol,na.rm=TRUE)
+     mxDC<-max(dataCol,na.rm=TRUE)
+     dataCol<-(dataCol-mnDC)/max(0.000000001,mxDC-mnDC)
+     dataCol<-0.3+dataCol*0.7
+     dataCol[is.na(dataCol)]<-0
+     proxy <- leafletProxy("map")
+     proxy %>% clearShapes()
+     for (powiati in 1:length(powiatyOGR$NAZWA)) {
+     selPols<-powiatyOGR@polygons[powiati]
+     if (length(selPols)>=1) {         
+        regLngLat<-selPols[[1]]@labpt
+        
+        print(regLngLat)
+        proxy %>% addPolygons(data = powiatyOGR@polygons[powiati][[1]], 
+                              fillColor = "green",
+                              fillOpacity = dataCol[powiati], 
+                              color = "red",
+                              weight = 2, 
+                              stroke = TRUE,
+                              layerId = powiati)
+        }
+     }
+  }
+    
   do_shape_onclick <-function(click) {
     
     # add new circle
@@ -249,7 +274,7 @@ function(input, output, session) {
      #proxy %>% addMarkers(lng=click$lng,lat = click$lat,popup='Your Starting Point')
       proxy %>% addMarkers(lng=regLngLat[1],lat = regLngLat[2],popup='Your Starting Point')
     
-      proxy %>% removeMarker(layerId = click$id)
+      proxy %>% removeShape(layerId = click$id)
       
       #leafletProxy("map")<-proxy
       
@@ -319,7 +344,11 @@ function(input, output, session) {
      obj<-input$testButton; if (is.null(obj)) return()
      if(input$testButton==0) isolate({
          prepareMap()
-     })
+     }) else {
+         daneGlob<<-input$dane
+         print(paste("input$dane",input$dane))
+         color_all(powiatyData[,as.numeric(input$dane)])
+     }
      printTest(paste("testButton not null",input$testButton)) 
      #print(input$testButton)
   })
